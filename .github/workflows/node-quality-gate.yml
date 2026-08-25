@@ -8,6 +8,11 @@ on:
         required: false
         type: string
         default: "20"
+      checkout-ref:
+        description: Optional caller repository ref/tag/SHA to verify
+        required: false
+        type: string
+        default: ""
       run-tests:
         required: false
         type: boolean
@@ -57,6 +62,8 @@ jobs:
     steps:
       - name: Checkout caller repository
         uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.checkout-ref != '' && inputs.checkout-ref || github.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v6
