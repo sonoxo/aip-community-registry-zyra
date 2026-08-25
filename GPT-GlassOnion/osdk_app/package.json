@@ -1,0 +1,12 @@
+{
+  "name": "gpt-glassonion",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "Governed geospatial ontology and agent-wave framework for Palantir AIP and Zyra",
+  "scripts": {
+    "start": "node src/server.js",
+    "demo": "node src/demo.js",
+    "test": "node --test"
+  }
+}
