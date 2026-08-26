@@ -1,47 +1,76 @@
 # GPT-GlassOnion
 
-GPT-GlassOnion is a governed geospatial ontology and multi-agent research framework for Palantir AIP and the Zyra ecosystem. It models authorized data as typed objects, links, actions, provenance records, and GeoJSON layers, then coordinates 24 specialist agent profiles plus a synthesis coordinator across deterministic waves of 3, 6, 7, and 9 executions.
+GPT-GlassOnion is a cloud-only, governed geospatial research reference for Palantir AIP and the Zyra ecosystem. Its TypeScript runtime accepts authorized GeoJSON features, preserves them for the lifetime of the cloud process, exports a FeatureCollection, records tamper-evident audit events, and demonstrates bounded specialist execution.
 
 ![GPT-GlassOnion architecture](images/architecture.svg)
 
-## Capabilities
+## Verified reference capabilities
 
-- Foundry-inspired object, property, link, and action ontology
-- GeoJSON Point, LineString, and Polygon validation
-- Deterministic 3 → 6 → 7 → 9 agent-wave orchestration
-- 24 specialist profiles and one synthesis coordinator
-- Citation, confidence, lineage, and SHA-256 audit records
-- Zyra-compatible JSONL knowledge export
-- Local or AIP-hosted model-provider contract
-- Civilian-use policy controls
+- Strict WGS84 validation for GeoJSON Point, LineString, and Polygon geometries
+- Runtime-scoped in-memory feature persistence and GeoJSON FeatureCollection export
+- Deterministic 3 → 6 → 7 → 9 execution plan
+- 24 bounded specialist profiles plus one synthesis coordinator
+- Source citations and SHA-256 chained audit events
+- Civilian-use governance controls
+- TypeScript Fastify API and React/Vite dashboard
 
-## Installation
+This repository does not contain a downloadable model. GlassOnion is operated from authorized cloud repositories and cloud runtime environments.
 
-GPT-GlassOnion is cloud-first. Deploy the `osdk_app` directory to an authorized Node.js 20+ cloud or Foundry Compute Module environment.
+## Cloud build and verification
 
-1. Create a code repository or Compute Module in the target Foundry project.
-2. Add the contents of `osdk_app` to that cloud repository.
-3. Run `npm test` and require all tests to pass before deployment.
-4. Configure `PORT` if the platform does not supply it automatically.
-5. Start the service with `npm start`.
-6. Confirm `GET /health` returns `{"status":"ok","auditValid":true}`.
-7. Connect only project-approved Ontology objects, Actions, and data sources.
+From the `GPT-GlassOnion/osdk_app` directory in an authorized GitHub Actions, Foundry, or other cloud build environment:
 
-No local model download, packaged GlassOnion model, credentials, or customer data are included.
+```bash
+npm install
+npm run quality
+npm start
+```
 
-## Demo
+The production server is the TypeScript Fastify application compiled from `src/server.ts`. The JavaScript reference files remain historical examples and are not the production runtime or test authority.
 
-Run `npm run demo` in the cloud build environment to execute all four bounded waves. Import the response from `GET /map.geojson` into a Foundry Map layer to visualize authorized geospatial objects.
+## TypeScript API
 
-## Full-stack TypeScript architecture
+- `GET /api/health`
+- `GET /api/audit`
+- `POST /api/geo/features`
+- `GET /api/map.geojson`
+- `POST /api/swarm/run`
 
-- **Frontend:** React 19 + Vite dashboard for health, Foundry connection state, and governed fleet execution.
-- **Backend:** Fastify TypeScript API with audit journal, policy enforcement, and 25-execution synthesis flow.
-- **Foundry:** TypeScript OSDK 2.0 client using `@osdk/client` and confidential OAuth.
-- **Cloud runtime:** Multi-stage non-root Node.js container suitable for an authorized Compute Module environment.
-- **Shared contracts:** Typed health, source, finding, geometry, and swarm request/response interfaces.
+Create an authorized feature:
 
-### Required Foundry environment variables
+```json
+{
+  "id": "richmond-resource-1",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-77.436, 37.54]
+  },
+  "properties": {
+    "name": "Public resilience resource",
+    "rightsBasis": "public"
+  }
+}
+```
+
+The current store is intentionally process-local. A production deployment should replace it with tenant-approved Ontology object and Action bindings while preserving the same validation and governance boundary.
+
+Run a bounded analysis:
+
+```json
+{
+  "objective": "Map public climate resilience resources in Virginia",
+  "sources": [{
+    "id": "public-demo",
+    "title": "Authorized public source",
+    "url": "https://example.org/data.geojson",
+    "rightsBasis": "public"
+  }]
+}
+```
+
+## Foundry readiness
+
+The included adapter can construct an OSDK client only after these cloud secrets and identifiers are supplied:
 
 ```text
 FOUNDRY_API_URL=https://<enrollment>.palantirfoundry.com
@@ -50,55 +79,33 @@ FOUNDRY_CLIENT_ID=<Developer Console service client>
 FOUNDRY_CLIENT_SECRET=<cloud secret; never commit>
 ```
 
-Generate tenant-specific object and Action bindings in Developer Console, install that generated SDK package, and connect the exported object/action definitions through `src/palantir.ts`. Until those tenant values and generated bindings are supplied, the dashboard accurately reports **awaiting tenant variables** instead of claiming a live Foundry deployment.
+`foundryConfigured: true` means only that all four values are present. It does **not** prove authentication, generated Ontology bindings, deployment, or tenant verification. Until an authenticated smoke test succeeds against tenant-generated bindings, GlassOnion remains **tenant-unverified**.
 
-## Palantir configuration
+To complete tenant integration:
 
-1. Create or select Foundry object types for KnowledgeSource, Place, Observation, Agent, and Finding.
-2. Map their properties using `ontology.schema.json`.
-3. Configure Actions for governed ingestion and finding approval.
-4. Register the service as a Compute Module or adapt the provider contract to AIP Logic.
-5. Grant the service identity only the object and action permissions required for the selected project.
-6. Import the resulting GeoJSON into a Map layer or bind geometry properties directly to Ontology objects.
-
-This contribution contains no credentials, customer data, proprietary Palantir source code, or claims of Palantir affiliation.
-
-## Usage
-
-```bash
-npm test
-npm run demo
-npm start
-```
-
-Default API routes:
-
-- `GET /health`
-- `GET /ontology`
-- `GET /map.geojson`
-- `GET /audit`
-- `POST /swarm/run`
-
-Example objective:
-
-```json
-{"objective":"Map public climate resilience resources in Virginia"}
-```
+1. Generate tenant-specific object and Action bindings in Developer Console.
+2. Install the generated SDK package in the authorized cloud build.
+3. Connect approved object and Action definitions through `src/palantir.ts`.
+4. Grant the service identity only the required project permissions.
+5. Run a harmless authenticated Ontology read smoke test.
+6. Retain deployment evidence without committing credentials or customer data.
 
 ## Agent model
 
-The wave sizes total 25 executions. Slots 1–24 are bounded specialist profiles. Execution 25 is the synthesis coordinator in the final nine-member wave. “Agent” means a registered task profile, not a claim of consciousness or independent authority.
+The reference plan contains 25 executions: 24 bounded specialist profiles followed by a synthesis coordinator. “Agent” means a registered task profile, not consciousness or independent authority. Production orchestration should require explicit completion or failure accounting for every specialist before synthesis.
 
 ## Data governance
 
-Use public or properly authorized data. Preserve source URL, rights basis, retrieval time, content hash, model version, citations, confidence, and lineage. Consequential decisions require human approval. The default policy rejects weapon targeting, covert surveillance, facial tracking, credential bypass, and autonomous physical-force workflows.
+Use only public or properly authorized data. Preserve source URL, rights basis, retrieval time, hashes, citations, confidence, and lineage in the production Ontology. Consequential decisions require human approval. The default policy rejects weapon targeting, covert surveillance, facial tracking, credential bypass, and autonomous physical-force workflows.
+
+This contribution contains no credentials, customer data, proprietary Palantir source code, or claim of Palantir affiliation.
 
 ## Requirements
 
 - Node.js 20 or later
 - A Palantir Foundry/AIP tenant for platform integration
 - Appropriate Ontology, Action, and Compute Module permissions
-- User-provided model provider for production inference
+- Tenant-generated OSDK bindings for a verified Foundry deployment
 
 ## Sources
 
