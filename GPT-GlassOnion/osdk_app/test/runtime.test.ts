@@ -98,3 +98,53 @@ test("audit verification detects payload tampering", () => {
   event.payload.wave = 99;
   assert.equal(journal.verify(), false);
 });
+
+test("geospatial API persists and exports validated Point, LineString, and Polygon features", async (t) => {
+  const app = await buildApp();
+  t.after(() => app.close());
+
+  const geometries = [
+    { type: "Point", coordinates: [-77.436, 37.54] },
+    { type: "LineString", coordinates: [[-77.5, 37.5], [-77.4, 37.6]] },
+    { type: "Polygon", coordinates: [[[-77.5, 37.5], [-77.4, 37.5], [-77.4, 37.6], [-77.5, 37.5]]] }
+  ];
+
+  for (const [index, geometry] of geometries.entries()) {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/geo/features",
+      payload: { id: `feature-${index + 1}`, geometry, properties: { authorized: true } }
+    });
+    assert.equal(response.statusCode, 201);
+    assert.equal(response.json().geometry.type, geometry.type);
+  }
+
+  const map = await app.inject({ method: "GET", url: "/api/map.geojson" });
+  assert.equal(map.statusCode, 200);
+  assert.match(map.headers["content-type"], /application\/geo\+json/);
+  assert.equal(map.json().type, "FeatureCollection");
+  assert.equal(map.json().features.length, 3);
+});
+
+test("geospatial API rejects malformed and out-of-range geometries", async (t) => {
+  const app = await buildApp();
+  t.after(() => app.close());
+
+  const invalid = [
+    { type: "Point", coordinates: [181, 37.5] },
+    { type: "LineString", coordinates: [[-77.5, 37.5]] },
+    { type: "Polygon", coordinates: [[[-77.5, 37.5], [-77.4, 37.5], [-77.4, 37.6], [-77.6, 37.6]]] }
+  ];
+
+  for (const geometry of invalid) {
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/geo/features",
+      payload: { geometry }
+    });
+    assert.equal(response.statusCode, 400);
+  }
+
+  const map = await app.inject({ method: "GET", url: "/api/map.geojson" });
+  assert.equal(map.json().features.length, 0);
+});
