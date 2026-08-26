@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { buildApp } from "../src/app.js";
-import { AuditJournal } from "../src/core.js";
+import { AuditJournal, runFleet } from "../src/core.js";
 
 test("TypeScript Fastify runtime reports truthful Foundry readiness", async (t) => {
   const app = await buildApp({ env: {} });
@@ -45,7 +45,9 @@ test("TypeScript Fastify runtime executes the governed 3/6/7/9 fleet", async (t)
 
   const audit = await app.inject({ method: "GET", url: "/api/audit" });
   assert.equal(audit.statusCode, 200);
-  assert.equal(audit.json().length, 4);
+  assert.equal(audit.json().length, 6);
+  assert.equal(audit.json()[4].payload.status, "released");
+  assert.equal(audit.json()[5].type, "fleet.synthesis.completed");
 });
 
 test("TypeScript Fastify runtime enforces governance and API boundaries", async (t) => {
@@ -147,4 +149,74 @@ test("geospatial API rejects malformed and out-of-range geometries", async (t) =
 
   const map = await app.inject({ method: "GET", url: "/api/map.geojson" });
   assert.equal(map.json().features.length, 0);
+});
+
+
+test("coordinator synthesis is released only after all 24 specialists succeed", async () => {
+  const journal = new AuditJournal();
+  const calledSlots: number[] = [];
+
+  const result = await runFleet(
+    "Analyze authorized public geospatial resilience data",
+    [],
+    journal,
+    {
+      executeSpecialist: async ({ slot, role, objective }) => {
+        calledSlots.push(slot);
+        return {
+          role,
+          summary: `${role} assessed: ${objective}`,
+          confidence: 0.75,
+          citations: []
+        };
+      }
+    }
+  );
+
+  assert.deepEqual(calledSlots, Array.from({ length: 24 }, (_, index) => index + 1));
+  assert.equal(result.findings.length, 25);
+  assert.equal(result.synthesis.role, "synthesis-coordinator");
+  assert.equal(journal.events[4].type, "fleet.specialist-barrier.evaluated");
+  assert.equal((journal.events[4].payload as { status: string }).status, "released");
+  assert.equal(journal.events[5].type, "fleet.synthesis.completed");
+});
+
+test("specialist failure accounts for all 24 outcomes and blocks synthesis", async () => {
+  const journal = new AuditJournal();
+  const calledSlots: number[] = [];
+
+  await assert.rejects(
+    runFleet(
+      "Analyze authorized public geospatial resilience data",
+      [],
+      journal,
+      {
+        executeSpecialist: async ({ slot, role }) => {
+          calledSlots.push(slot);
+          if (slot === 11) throw new Error("deterministic specialist failure");
+          return { role, summary: "verified", confidence: 0.7, citations: [] };
+        }
+      }
+    ),
+    /Synthesis blocked: 1 specialist execution\(s\) failed/
+  );
+
+  assert.equal(calledSlots.length, 24);
+  const barrier = journal.events.at(-1)!;
+  assert.equal(barrier.type, "fleet.specialist-barrier.evaluated");
+  assert.deepEqual(
+    barrier.payload,
+    {
+      required: 24,
+      succeeded: 23,
+      failed: 1,
+      status: "blocked",
+      failures: [{
+        slot: 11,
+        role: "source-critic",
+        reason: "deterministic specialist failure"
+      }]
+    }
+  );
+  assert.equal(journal.events.some((event) => event.type === "fleet.synthesis.completed"), false);
 });
