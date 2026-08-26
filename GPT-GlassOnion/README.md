@@ -92,7 +92,7 @@ To complete tenant integration:
 
 ## Agent model
 
-The reference plan contains 25 executions: 24 bounded specialist profiles followed by a synthesis coordinator. “Agent” means a registered task profile, not consciousness or independent authority. Production orchestration should require explicit completion or failure accounting for every specialist before synthesis.
+The reference plan contains 25 executions: 24 bounded specialist profiles followed by a synthesis coordinator. All 24 specialist outcomes are recorded through an explicit all-settled barrier. Synthesis runs only when every specialist succeeds; any failure blocks it. “Agent” means a registered task profile, not consciousness or independent authority.
 
 ## Data governance
 
