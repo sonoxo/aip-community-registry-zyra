@@ -33,6 +33,25 @@ No local model download, packaged GlassOnion model, credentials, or customer dat
 
 Run `npm run demo` in the cloud build environment to execute all four bounded waves. Import the response from `GET /map.geojson` into a Foundry Map layer to visualize authorized geospatial objects.
 
+## Full-stack TypeScript architecture
+
+- **Frontend:** React 19 + Vite dashboard for health, Foundry connection state, and governed fleet execution.
+- **Backend:** Fastify TypeScript API with audit journal, policy enforcement, and 25-execution synthesis flow.
+- **Foundry:** TypeScript OSDK 2.0 client using `@osdk/client` and confidential OAuth.
+- **Cloud runtime:** Multi-stage non-root Node.js container suitable for an authorized Compute Module environment.
+- **Shared contracts:** Typed health, source, finding, geometry, and swarm request/response interfaces.
+
+### Required Foundry environment variables
+
+```text
+FOUNDRY_API_URL=https://<enrollment>.palantirfoundry.com
+FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.<id>
+FOUNDRY_CLIENT_ID=<Developer Console service client>
+FOUNDRY_CLIENT_SECRET=<cloud secret; never commit>
+```
+
+Generate tenant-specific object and Action bindings in Developer Console, install that generated SDK package, and connect the exported object/action definitions through `src/palantir.ts`. Until those tenant values and generated bindings are supplied, the dashboard accurately reports **awaiting tenant variables** instead of claiming a live Foundry deployment.
+
 ## Palantir configuration
 
 1. Create or select Foundry object types for KnowledgeSource, Place, Observation, Agent, and Finding.
