@@ -10,9 +10,17 @@ export class AuditJournal {
     const previousHash = (this.events.at(-1)?.hash as string | undefined) ?? "GENESIS";
     const unsigned = { id: randomUUID(), at: new Date().toISOString(), type, payload, previousHash };
     const event = Object.freeze({ ...unsigned, hash: createHash("sha256").update(JSON.stringify(unsigned)).digest("hex") });
-    (this.events as Array<typeof event>).push(event); return event;
+    (this.events as Array<typeof event>).push(event);
+    return event;
   }
-  verify() { return this.events.every((event, i) => event.previousHash === (i ? this.events[i - 1].hash : "GENESIS")); }
+  verify() {
+    return this.events.every((event, index) => {
+      const { hash, ...unsigned } = event;
+      const expectedPreviousHash = index ? this.events[index - 1].hash : "GENESIS";
+      const expectedHash = createHash("sha256").update(JSON.stringify(unsigned)).digest("hex");
+      return unsigned.previousHash === expectedPreviousHash && hash === expectedHash;
+    });
+  }
 }
 
 export async function runFleet(objective: string, sources: SourceRef[] = [], journal = new AuditJournal()): Promise<SwarmResult> {
