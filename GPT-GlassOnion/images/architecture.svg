@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+<title id="title">GPT-GlassOnion architecture</title>
+<desc id="desc">Authorized sources flow through provenance ingestion into an ontology and geospatial layer, analyzed by 24 specialists and a synthesis coordinator, then exported to Zyra.</desc>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101426"/><stop offset="1" stop-color="#25103a"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect width="1200" height="675" rx="28" fill="url(#bg)"/>
+<text x="600" y="72" fill="#fff" font-family="Arial,sans-serif" font-size="38" font-weight="700" text-anchor="middle">GPT-GlassOnion</text>
+<text x="600" y="108" fill="#b8c1ff" font-family="Arial,sans-serif" font-size="19" text-anchor="middle">Governed Geospatial Agent Ontology</text>
+<g font-family="Arial,sans-serif" font-size="18" text-anchor="middle">
+<rect x="55" y="250" width="190" height="105" rx="18" fill="#17233f" stroke="#58e6ff" stroke-width="3"/><text x="150" y="294" fill="#fff">Authorized</text><text x="150" y="322" fill="#fff">Sources</text>
+<rect x="285" y="250" width="190" height="105" rx="18" fill="#17233f" stroke="#58e6ff" stroke-width="3"/><text x="380" y="294" fill="#fff">Provenance</text><text x="380" y="322" fill="#fff">Ingestion</text>
+<rect x="515" y="185" width="190" height="105" rx="18" fill="#261848" stroke="#b56cff" stroke-width="3"/><text x="610" y="229" fill="#fff">Typed</text><text x="610" y="257" fill="#fff">Ontology</text>
+<rect x="515" y="325" width="190" height="105" rx="18" fill="#173d3f" stroke="#60f0bf" stroke-width="3"/><text x="610" y="369" fill="#fff">GeoJSON</text><text x="610" y="397" fill="#fff">Map Layers</text>
+<rect x="745" y="250" width="190" height="105" rx="18" fill="#3f1e3d" stroke="#ff70d5" stroke-width="3"/><text x="840" y="294" fill="#fff">24 Specialist</text><text x="840" y="322" fill="#fff">Profiles</text>
+<rect x="975" y="250" width="170" height="105" rx="18" fill="#442d12" stroke="#ffbd59" stroke-width="3"/><text x="1060" y="294" fill="#fff">Synthesis</text><text x="1060" y="322" fill="#fff">Coordinator</text>
+<path d="M245 302h40M475 302h40M705 237c45 0 40 65 40 65M705 378c45 0 40-76 40-76M935 302h40" fill="none" stroke="#dce4ff" stroke-width="4" marker-end="url(#arrow)"/>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L9 3L0 6Z" fill="#dce4ff"/></marker></defs>
+</g>
+<g font-family="Arial,sans-serif" text-anchor="middle"><text x="600" y="520" fill="#fff" font-size="22" font-weight="700">Wave Plan: 3 → 6 → 7 → 9</text><text x="600" y="555" fill="#b8c1ff" font-size="18">Citations • Confidence • Lineage • Tamper-evident audit</text><text x="600" y="600" fill="#8cf5d1" font-size="17">Cloud-first • Human-governed • Civilian decision support</text></g>
+</svg>
