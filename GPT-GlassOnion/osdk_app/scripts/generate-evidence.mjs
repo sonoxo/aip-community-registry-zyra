@@ -23,11 +23,13 @@ for (const relativePath of requiredFiles) {
 }
 
 const requiredFoundryVariables = [
-  "FOUNDRY_BASE_URL",
+  "FOUNDRY_API_URL",
   "FOUNDRY_ONTOLOGY_RID",
-  "FOUNDRY_CLIENT_ID"
+  "FOUNDRY_CLIENT_ID",
+  "FOUNDRY_CLIENT_SECRET"
 ];
 const configuredVariables = requiredFoundryVariables.filter((name) => Boolean(process.env[name]));
+const tenantConfigurationPresent = configuredVariables.length === requiredFoundryVariables.length;
 const manifest = {
   schemaVersion: "1.0.0",
   generatedAt: new Date().toISOString(),
@@ -36,8 +38,12 @@ const manifest = {
   verification: {
     sourceIntegrity: "sha256",
     requiredFilesPresent: true,
-    tenantDeploymentVerified: configuredVariables.length === requiredFoundryVariables.length,
-    configuredFoundryVariables,
+    tenantConfigurationPresent,
+    tenantDeploymentVerified: false,
+    tenantVerificationReason: tenantConfigurationPresent
+      ? "Configuration is present; an authenticated OSDK smoke test is still required."
+      : "Required tenant configuration is incomplete.",
+    configuredFoundryVariables: configuredVariables.map((name) => name.replace("CLIENT_SECRET", "CLIENT_SECRET_PRESENT")),
     missingFoundryVariables: requiredFoundryVariables.filter((name) => !configuredVariables.includes(name))
   },
   files
@@ -55,5 +61,6 @@ await writeFile(
 console.log(JSON.stringify({
   evidence: "dist/evidence/deployment-readiness.json",
   manifestSha256: manifest.manifestSha256,
-  tenantDeploymentVerified: manifest.verification.tenantDeploymentVerified
+  tenantConfigurationPresent,
+  tenantDeploymentVerified: false
 }));
