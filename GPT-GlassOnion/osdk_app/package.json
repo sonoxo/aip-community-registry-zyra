@@ -15,7 +15,7 @@
     "build:server": "tsc --outDir dist/server --noEmit false",
     "start": "node dist/server/server.js",
     "demo": "tsx src/demo.ts",
-    "test": "node --test test/system.test.js",
+    "test": "node --import tsx --test test/*.test.ts",
     "check": "tsc --noEmit",
     "evidence": "node scripts/generate-evidence.mjs",
     "quality": "npm run check && npm test && npm run build && npm run evidence"
