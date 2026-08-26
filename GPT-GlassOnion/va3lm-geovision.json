@@ -1,0 +1,38 @@
+{
+  "profile": "GPT-GLASSONION/VA3LM",
+  "stack": "PALANTIRVABRAIN3LM-GPT-DOUG-LLM-ZYRA-XUNA-SONOXO-ECOSYSTEM",
+  "capability": "NON_IDENTIFYING_OBJECT_SCENE_RECOGNITION",
+  "foundry": {
+    "mediaSet": "/Sonoxo/EYERIS/camera-images",
+    "imageListing": "/Sonoxo/EYERIS/image-listing",
+    "rawDetections": "/Sonoxo/EYERIS/detections-raw",
+    "cameraMetadata": "/Sonoxo/EYERIS/cameras",
+    "geospatialDetections": "/Sonoxo/EYERIS/detections-geospatial",
+    "modelPatterns": ["container-backed", "batch", "live-deployment"],
+    "geospatial": {
+      "crs": "WGS84",
+      "cameraPoint": "geopoint",
+      "fieldOfView": "geoshape"
+    }
+  },
+  "ontology": {
+    "objectTypes": ["Camera", "Detection"],
+    "links": ["CameraDetections"],
+    "reviewActions": ["flagDetectionForReview", "clearDetectionReview"]
+  },
+  "runtime": {
+    "command": "/VA3LM",
+    "statusRoute": "/api/va3lm/geovision/status",
+    "cameraRead": "GEOVISION CAMERAS <ontology>",
+    "detectionRead": "GEOVISION DETECTIONS <ontology>"
+  },
+  "privacyBoundary": {
+    "authorizedInputsOnly": true,
+    "forbidden": [
+      "face recognition",
+      "biometric embeddings",
+      "named-person lookup",
+      "persistent individual tracking"
+    ]
+  }
+}
