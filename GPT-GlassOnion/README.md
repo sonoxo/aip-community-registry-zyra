@@ -2,6 +2,8 @@
 
 GPT-GlassOnion is a governed geospatial ontology and multi-agent research framework for Palantir AIP and the Zyra ecosystem. It models authorized data as typed objects, links, actions, provenance records, and GeoJSON layers, then coordinates 24 specialist agent profiles plus a synthesis coordinator across deterministic waves of 3, 6, 7, and 9 executions.
 
+![GPT-GlassOnion architecture](images/architecture.svg)
+
 ## Capabilities
 
 - Foundry-inspired object, property, link, and action ontology
@@ -12,6 +14,24 @@ GPT-GlassOnion is a governed geospatial ontology and multi-agent research framew
 - Zyra-compatible JSONL knowledge export
 - Local or AIP-hosted model-provider contract
 - Civilian-use policy controls
+
+## Installation
+
+GPT-GlassOnion is cloud-first. Deploy the `osdk_app` directory to an authorized Node.js 20+ cloud or Foundry Compute Module environment.
+
+1. Create a code repository or Compute Module in the target Foundry project.
+2. Add the contents of `osdk_app` to that cloud repository.
+3. Run `npm test` and require all tests to pass before deployment.
+4. Configure `PORT` if the platform does not supply it automatically.
+5. Start the service with `npm start`.
+6. Confirm `GET /health` returns `{"status":"ok","auditValid":true}`.
+7. Connect only project-approved Ontology objects, Actions, and data sources.
+
+No local model download, packaged GlassOnion model, credentials, or customer data are included.
+
+## Demo
+
+Run `npm run demo` in the cloud build environment to execute all four bounded waves. Import the response from `GET /map.geojson` into a Foundry Map layer to visualize authorized geospatial objects.
 
 ## Palantir configuration
 
