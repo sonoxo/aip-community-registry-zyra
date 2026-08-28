@@ -1,0 +1,66 @@
+name: CIA Reading Room 2026 Ingest
+
+on:
+  push:
+    branches:
+      - feature/gpt-glassonion-public-intel-v03
+    paths:
+      - 'GPT-GlassOnion/intel/cia-reading-room-2026/ingest.py'
+      - '.github/workflows/cia-reading-room-2026-ingest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/gpt-glassonion-public-intel-v03
+          fetch-depth: 0
+
+      - name: Install PDF extraction and OCR tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils tesseract-ocr
+
+      - name: Exhaustively ingest public 2026 CIA Reading Room filter
+        id: ingest
+        continue-on-error: true
+        run: |
+          python3 GPT-GlassOnion/intel/cia-reading-room-2026/ingest.py
+
+      - name: Publish text corpus + manifest as workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cia-reading-room-2026-public-corpus
+          path: |
+            GPT-GlassOnion/intel/cia-reading-room-2026/generated/manifest.json
+            GPT-GlassOnion/intel/cia-reading-room-2026/generated/STATUS.md
+            GPT-GlassOnion/intel/cia-reading-room-2026/generated/work/text/
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Commit verifiable manifest/status to branch
+        if: always()
+        run: |
+          if [ ! -f GPT-GlassOnion/intel/cia-reading-room-2026/generated/manifest.json ]; then
+            echo 'No manifest was produced.'
+            exit 1
+          fi
+          git config user.name 'gpt-glassonion-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add GPT-GlassOnion/intel/cia-reading-room-2026/generated/manifest.json \
+                  GPT-GlassOnion/intel/cia-reading-room-2026/generated/STATUS.md
+          git commit -m 'data(glassonion): refresh CIA Reading Room 2026 ingestion manifest' || exit 0
+          git push origin HEAD:feature/gpt-glassonion-public-intel-v03
+
+      - name: Enforce complete corpus
+        if: steps.ingest.outcome != 'success'
+        run: |
+          echo 'Corpus is not yet 100% complete; inspect STATUS.md and manifest.json.'
+          exit 1
