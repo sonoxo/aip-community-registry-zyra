@@ -1,0 +1,38 @@
+name: CIA Reading Room Endpoint Diagnostic
+
+on:
+  push:
+    branches:
+      - feature/gpt-glassonion-public-intel-v03
+    paths:
+      - '.github/workflows/cia-reading-room-endpoint-diagnostic.yml'
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe Reading Room endpoints and search variants
+        shell: bash
+        run: |
+          set +e
+          F='f%5B0%5D=ds_created%3A%5B2026-01-01T00%3A00%3A00Z%20TO%202027-01-01T00%3A00%3A00Z%5D'
+          urls=(
+            "https://www.cia.gov/readingroom"
+            "https://www.cia.gov/readingroom/search/site/a?$F"
+            "https://www.cia.gov/readingroom/search/site/2026?$F"
+            "https://www.cia.gov/readingroom/search/site/%2A?$F"
+            "https://www.cia.gov/readingroom/search/site/*?$F"
+            "https://www.cia.gov/readingroom/search/site/CIA?$F"
+            "https://www.cia.gov/readingroom/docs/CENTRAL%20INTELLIGENCE%20BULL%5B15777364%5D.pdf"
+          )
+          for u in "${urls[@]}"; do
+            echo "===== $u"
+            tmp=$(mktemp)
+            curl -sS -D - -o "$tmp" --max-redirs 0 -A 'Mozilla/5.0' "$u" | sed -n '1,24p'
+            echo "BODY_BYTES=$(wc -c < "$tmp")"
+            echo "DOC_LINKS=$(grep -Eo '/readingroom/document/[^\"< ]+' "$tmp" | sort -u | wc -l)"
+            sed -n '1,8p' "$tmp"
+            rm -f "$tmp"
+            echo
+          done

@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.1",
+  "source": "https://www.cia.gov/readingroom/search/site/?f%5B0%5D=ds_created%3A%5B2026-01-01T00%3A00%3A00Z%20TO%202027-01-01T00%3A00%3A00Z%5D",
+  "filter": "ds_created:[2026-01-01T00:00:00Z TO 2027-01-01T00:00:00Z]",
+  "observed_at": "2026-08-28T08:36:14Z",
+  "source_access": "BLOCKED_BY_ORIGIN_EDGE",
+  "source_response": {
+    "http_status": 302,
+    "location": "https://www.cia.gov/readingroom",
+    "body_title": "Access Denied",
+    "tested_surfaces": [
+      "/readingroom",
+      "/readingroom/search/site/?f[0]=ds_created:[2026-01-01T00:00:00Z TO 2027-01-01T00:00:00Z]",
+      "/readingroom/search/site/a?f[0]=ds_created:[2026-01-01T00:00:00Z TO 2027-01-01T00:00:00Z]",
+      "/readingroom/search/site/2026?f[0]=ds_created:[2026-01-01T00:00:00Z TO 2027-01-01T00:00:00Z]",
+      "/readingroom/search/site/*?f[0]=ds_created:[2026-01-01T00:00:00Z TO 2027-01-01T00:00:00Z]",
+      "/readingroom/document/03004640",
+      "/readingroom/docs/CENTRAL%20INTELLIGENCE%20BULL%5B15777364%5D.pdf"
+    ]
+  },
+  "enumeration_complete": false,
+  "complete": false,
+  "counts": {
+    "discovered": null,
+    "downloaded": 0,
+    "scanned": 0,
+    "indexed": 0,
+    "errors": 1
+  },
+  "errors": [
+    {
+      "stage": "source_enumeration",
+      "code": "CIA_EDGE_ACCESS_DENIED",
+      "message": "The CIA origin edge denied the GitHub-hosted ingestion runner. The exact 2026 result count could not be enumerated, so discovered is intentionally null rather than falsely reported as zero.",
+      "retryable": true
+    }
+  ],
+  "records": []
+}
