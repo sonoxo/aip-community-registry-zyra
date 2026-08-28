@@ -1,0 +1,40 @@
+@prefix go: <https://sonoxo.dev/ontology/glassonion#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+go:PublicIntelligenceOntology a owl:Ontology ; rdfs:label "GPT-GlassOnion Public Intelligence and GEOINT Ontology" .
+go:Source a owl:Class .
+go:Document a owl:Class .
+go:Observation a owl:Class .
+go:GEOINTEntity a owl:Class .
+go:Place a owl:Class .
+go:Geometry a owl:Class .
+go:CoordinateReferenceSystem a owl:Class .
+go:Dataset a owl:Class .
+go:AnalyticWorkflow a owl:Class .
+go:AnalyticAssessment a owl:Class .
+go:AIModel a owl:Class .
+go:GEOINTStandard a owl:Class .
+go:MetadataProfile a owl:Class .
+go:ProvenanceRecord a owl:Class .
+go:Transformation a owl:Class .
+go:ConfidenceAssessment a owl:Class .
+go:derivedFrom a owl:ObjectProperty .
+go:hasProvenance a owl:ObjectProperty ; rdfs:range go:ProvenanceRecord .
+go:mentionsPlace a owl:ObjectProperty ; rdfs:range go:Place .
+go:hasGeometry a owl:ObjectProperty ; rdfs:range go:Geometry .
+go:usesCRS a owl:ObjectProperty ; rdfs:range go:CoordinateReferenceSystem .
+go:conformsTo a owl:ObjectProperty ; rdfs:range go:GEOINTStandard .
+go:usesModel a owl:ObjectProperty ; rdfs:range go:AIModel .
+go:producesAssessment a owl:ObjectProperty ; rdfs:range go:AnalyticAssessment .
+go:transformedBy a owl:ObjectProperty ; rdfs:range go:Transformation .
+go:sourceUrl a owl:DatatypeProperty ; rdfs:range xsd:anyURI .
+go:publisher a owl:DatatypeProperty ; rdfs:range xsd:string .
+go:publicationDate a owl:DatatypeProperty ; rdfs:range xsd:dateTime .
+go:retrievalDate a owl:DatatypeProperty ; rdfs:range xsd:dateTime .
+go:observationTime a owl:DatatypeProperty ; rdfs:range xsd:dateTime .
+go:confidence a owl:DatatypeProperty ; rdfs:range xsd:decimal .
+go:classificationLabel a owl:DatatypeProperty ; rdfs:range xsd:string .
+go:sourceHash a owl:DatatypeProperty ; rdfs:range xsd:string .
+go:summary a owl:DatatypeProperty ; rdfs:range xsd:string .
