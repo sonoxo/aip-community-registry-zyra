@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sonoxo.dev/schemas/glassonion-public-intelligence-record.json",
+  "title": "GPT-GlassOnion Public Intelligence Record",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["recordId", "classification", "source", "retrievedAt", "provenance", "confidence"],
+  "properties": {
+    "recordId": { "type": "string", "minLength": 1 },
+    "classification": { "type": "string", "enum": ["PUBLIC", "PUBLIC/DECLASSIFIED", "PUBLIC/UNCLASSIFIED"] },
+    "source": {
+      "type": "object",
+      "required": ["publisher", "url"],
+      "properties": {
+        "publisher": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "format": "uri" },
+        "documentId": { "type": ["string", "null"] },
+        "publishedAt": { "type": ["string", "null"] },
+        "sourceHash": { "type": ["string", "null"] }
+      }
+    },
+    "retrievedAt": { "type": "string", "format": "date-time" },
+    "observedAt": { "type": ["string", "null"] },
+    "title": { "type": ["string", "null"] },
+    "summary": { "type": ["string", "null"] },
+    "entities": { "type": "array", "items": { "type": "object" } },
+    "relationships": { "type": "array", "items": { "type": "object" } },
+    "geometry": { "type": ["object", "null"] },
+    "coordinateReferenceSystem": { "type": ["string", "null"] },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "provenance": {
+      "type": "object",
+      "required": ["sourceType", "transformations"],
+      "properties": {
+        "sourceType": { "type": "string", "minLength": 1 },
+        "transformations": { "type": "array", "items": { "type": "string" } },
+        "derivedFrom": { "type": "array", "items": { "type": "string" } },
+        "citations": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
