@@ -13,16 +13,14 @@ import argparse
 import hashlib
 import html
 import json
-import os
 import re
 import shutil
 import subprocess
-import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, urljoin, urlparse, parse_qsl, urlencode, urlunparse
+from urllib.parse import quote, urljoin
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 
 BASE = "https://www.cia.gov"
@@ -53,10 +51,11 @@ def fetch(url: str, *, binary: bool = False, timeout: int = 60, attempts: int = 
     raise RuntimeError(f"fetch failed after {attempts} attempts: {url}: {last}")
 
 def with_page(url: str, page: int) -> str:
-    p = urlparse(url)
-    q = dict(parse_qsl(p.query, keep_blank_values=True))
-    q["page"] = str(page)
-    return urlunparse((p.scheme, p.netloc, p.path, p.params, urlencode(q, doseq=True), p.fragment))
+    # Preserve the exact percent-encoding in the CIA filter. Re-parsing and
+    # urlencode() converts %20 to '+', which the Reading Room currently
+    # canonicalizes in a 302 loop.
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}page={page}"
 
 def clean_text(s: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(TAG_RE.sub(" ", s))).strip()
@@ -70,7 +69,6 @@ def enumerate_documents(max_pages: int = 10000) -> tuple[list[str], list[dict]]:
         try:
             body, final_url, _ = fetch(url)
         except Exception as e:
-            # Try legacy FOIA hostname as a compatibility fallback.
             legacy = url.replace("https://www.cia.gov", "https://foia.cia.gov", 1)
             try:
                 body, final_url, _ = fetch(legacy)
@@ -86,11 +84,7 @@ def enumerate_documents(max_pages: int = 10000) -> tuple[list[str], list[dict]]:
             if d not in seen:
                 seen.add(d); docs.append(d); found.append(d)
         pages.append({"page": page, "url": final_url, "status": "ok", "new_documents": len(found)})
-        if not found:
-            empty_streak += 1
-        else:
-            empty_streak = 0
-        # Search pages occasionally have a sparse page; stop only after two empties.
+        empty_streak = empty_streak + 1 if not found else 0
         if empty_streak >= 2:
             break
         time.sleep(0.35)
@@ -102,7 +96,6 @@ def pdf_to_text(pdf: Path, out_txt: Path, ocr_dir: Path) -> tuple[str, str | Non
         p = subprocess.run(["pdftotext", "-layout", str(pdf), str(out_txt)], capture_output=True, text=True)
         if p.returncode == 0 and out_txt.exists() and len(out_txt.read_text("utf-8", errors="ignore").strip()) >= 80:
             return "pdftotext", None
-    # OCR fallback for image-only documents.
     if shutil.which("pdftoppm") and shutil.which("tesseract"):
         ocr_dir.mkdir(parents=True, exist_ok=True)
         prefix = ocr_dir / "page"
@@ -121,16 +114,8 @@ def pdf_to_text(pdf: Path, out_txt: Path, ocr_dir: Path) -> tuple[str, str | Non
     return "failed", "pdftotext/tesseract unavailable"
 
 def ingest_document(url: str, work: Path, keep_pdfs: bool) -> dict:
-    rec = {
-        "document_url": url,
-        "discovered": True,
-        "downloaded": False,
-        "scanned": False,
-        "indexed": False,
-        "retrieved_at": datetime.now(timezone.utc).isoformat(),
-        "classification_scope": "PUBLIC/DECLASSIFIED",
-        "errors": [],
-    }
+    rec = {"document_url": url, "discovered": True, "downloaded": False, "scanned": False, "indexed": False,
+           "retrieved_at": datetime.now(timezone.utc).isoformat(), "classification_scope": "PUBLIC/DECLASSIFIED", "errors": []}
     try:
         body, final_url, _ = fetch(url)
         rec["document_url"] = final_url
@@ -143,7 +128,6 @@ def ingest_document(url: str, work: Path, keep_pdfs: bool) -> dict:
         rec["attachments"] = []
         if not pdfs:
             rec["errors"].append("no_pdf_attachment_found")
-            # Page body itself may still be indexable.
             text = clean_text(body)
             slug = re.sub(r"[^A-Za-z0-9._-]+", "_", final_url.rsplit("/",1)[-1])
             tpath = work / "text" / f"{slug}.txt"
@@ -151,6 +135,7 @@ def ingest_document(url: str, work: Path, keep_pdfs: bool) -> dict:
             tpath.write_text(text, encoding="utf-8")
             rec["indexed"] = len(text) > 100
             rec["scanned"] = rec["indexed"]
+            rec["downloaded"] = rec["indexed"]
             return rec
         for idx, purl in enumerate(pdfs, 1):
             a = {"url": purl, "downloaded": False, "scanned": False, "indexed": False}
@@ -193,49 +178,28 @@ def main() -> int:
     ap.add_argument("--keep-pdfs", action="store_true")
     ap.add_argument("--max-docs", type=int, default=0, help="0 = exhaustive")
     args = ap.parse_args()
-    out = Path(args.out)
-    work = out / "work"
-    out.mkdir(parents=True, exist_ok=True)
-
+    out = Path(args.out); work = out / "work"; out.mkdir(parents=True, exist_ok=True)
     started = datetime.now(timezone.utc).isoformat()
     docs, pages = enumerate_documents()
-    if args.max_docs: docs = docs[: args.max_docs]
+    if args.max_docs: docs = docs[:args.max_docs]
     records = []
     for n, url in enumerate(docs, 1):
         print(f"[{n}/{len(docs)}] {url}", flush=True)
-        records.append(ingest_document(url, work, args.keep_pdfs))
-        time.sleep(0.35)
-
-    counts = {
-        "discovered": len(records),
-        "downloaded": sum(bool(r.get("downloaded")) for r in records),
-        "scanned": sum(bool(r.get("scanned")) for r in records),
-        "indexed": sum(bool(r.get("indexed")) for r in records),
-        "errors": sum(bool(r.get("errors")) or any(a.get("error") for a in r.get("attachments", [])) for r in records),
-    }
+        records.append(ingest_document(url, work, args.keep_pdfs)); time.sleep(0.35)
+    counts = {"discovered": len(records),
+              "downloaded": sum(bool(r.get("downloaded")) for r in records),
+              "scanned": sum(bool(r.get("scanned")) for r in records),
+              "indexed": sum(bool(r.get("indexed")) for r in records),
+              "errors": sum(bool(r.get("errors")) or any(a.get("error") for a in r.get("attachments", [])) for r in records)}
     complete = bool(records) and counts["discovered"] == counts["downloaded"] == counts["scanned"] == counts["indexed"] and counts["errors"] == 0
-    manifest = {
-        "schema_version": "1.0",
-        "source": SEARCH,
-        "filter": FILTER,
-        "started_at": started,
-        "completed_at": datetime.now(timezone.utc).isoformat(),
-        "enumeration_pages": pages,
-        "counts": counts,
-        "complete": complete,
-        "records": records,
-    }
+    manifest = {"schema_version": "1.0", "source": SEARCH, "filter": FILTER, "started_at": started,
+                "completed_at": datetime.now(timezone.utc).isoformat(), "enumeration_pages": pages,
+                "counts": counts, "complete": complete, "records": records}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
-    (out / "STATUS.md").write_text(
-        "# CIA Reading Room 2026 ingestion status\n\n"
-        f"- Discovered: **{counts['discovered']}**\n"
-        f"- Downloaded: **{counts['downloaded']}**\n"
-        f"- Scanned: **{counts['scanned']}**\n"
-        f"- Indexed: **{counts['indexed']}**\n"
-        f"- Records with errors: **{counts['errors']}**\n"
-        f"- Complete: **{'YES' if complete else 'NO'}**\n",
-        encoding="utf-8",
-    )
+    (out / "STATUS.md").write_text("# CIA Reading Room 2026 ingestion status\n\n"
+        f"- Discovered: **{counts['discovered']}**\n- Downloaded: **{counts['downloaded']}**\n"
+        f"- Scanned: **{counts['scanned']}**\n- Indexed: **{counts['indexed']}**\n"
+        f"- Records with errors: **{counts['errors']}**\n- Complete: **{'YES' if complete else 'NO'}**\n", encoding="utf-8")
     print(json.dumps({"counts": counts, "complete": complete}, indent=2))
     return 0 if complete else 2
 
