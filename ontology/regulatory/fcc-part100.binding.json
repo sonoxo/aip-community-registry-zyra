@@ -1,0 +1,12 @@
+{
+  "bindingId": "glass-onion-fcc-part100-v1",
+  "ontologyRef": "./fcc-space-modernization-part100.v1.json",
+  "project": "GLASS_ONION",
+  "mode": "PROVENANCE_AND_REGULATORY_INTELLIGENCE_GRAPH",
+  "nodeTypes": ["Authority", "Order", "RulePart", "RuleSection", "LicenseClass", "ApplicationModule", "ReviewTrigger", "ProcessingStage", "Authorization", "OperationalObligation", "TransitionRule", "PublicNotice", "EvidenceArtifact", "Proposal"],
+  "edgeTypes": ["ADOPTS", "REPLACES", "DEFINES", "REQUIRES", "ROUTES_TO", "TRIGGERS", "GOVERNS", "CONDITIONS", "SUPERSEDES", "TRANSITIONS_TO", "SUPPORTED_BY", "PROPOSES_CHANGE_TO"],
+  "provenanceRequired": ["sourceUrl", "sourceType", "retrievedAt", "publishedOrReleasedAt", "authority", "confidence", "status"],
+  "statusVocabulary": ["ADOPTED", "NOT_YET_EFFECTIVE", "EFFECTIVE", "PROPOSED_FNPRM", "SUPERSEDED", "TRANSITIONAL", "UNVERIFIED"],
+  "ingestionRules": ["primary FCC source outranks secondary commentary", "preserve order and docket identifiers", "separate final rules from FNPRM proposals", "do not infer missing effective dates", "retain rule lineage from Part 25 to Part 100"],
+  "watchTargets": ["FCC 26-47", "SB Docket No. 25-306", "Part 100 effective-date notices", "Part 25 to Part 100 mapping chart", "Space Bureau filing-format notices", "ephemeris/SSA follow-on rules", "FNPRM final actions"]
+}
