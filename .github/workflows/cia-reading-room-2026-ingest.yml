@@ -1,4 +1,5 @@
 name: CIA Reading Room 2026 Ingest
+run-name: CIA Reading Room 2026 Ingest • exact filter encoding
 
 on:
   push:
@@ -54,8 +55,8 @@ jobs:
           fi
           git config user.name 'gpt-glassonion-bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add GPT-GlassOnion/intel/cia-reading-room-2026/generated/manifest.json \
-                  GPT-GlassOnion/intel/cia-reading-room-2026/generated/STATUS.md
+          git add -f GPT-GlassOnion/intel/cia-reading-room-2026/generated/manifest.json \
+                     GPT-GlassOnion/intel/cia-reading-room-2026/generated/STATUS.md
           git commit -m 'data(glassonion): refresh CIA Reading Room 2026 ingestion manifest' || exit 0
           git push origin HEAD:feature/gpt-glassonion-public-intel-v03
 
