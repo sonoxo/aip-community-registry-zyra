@@ -1,13 +1,22 @@
 {
   "profile": "GPT-GLASSONION/VA3LM",
+  "version": "0.3.0",
   "stack": "PALANTIRVABRAIN3LM-GPT-DOUG-LLM-ZYRA-XUNA-SONOXO-ECOSYSTEM",
-  "capability": "NON_IDENTIFYING_OBJECT_SCENE_RECOGNITION",
+  "capabilities": [
+    "NON_IDENTIFYING_OBJECT_SCENE_RECOGNITION",
+    "PUBLIC_SOURCE_INTELLIGENCE_NORMALIZATION",
+    "PUBLIC_GEOINT_SEMANTIC_MAPPING",
+    "PROVENANCE_AND_CONFIDENCE_GOVERNANCE"
+  ],
   "foundry": {
+    "status": "integration-ready-not-tenant-verified",
     "mediaSet": "/Sonoxo/EYERIS/camera-images",
     "imageListing": "/Sonoxo/EYERIS/image-listing",
     "rawDetections": "/Sonoxo/EYERIS/detections-raw",
     "cameraMetadata": "/Sonoxo/EYERIS/cameras",
     "geospatialDetections": "/Sonoxo/EYERIS/detections-geospatial",
+    "publicIntelRaw": "/Sonoxo/GlassOnion/public-intel-raw",
+    "publicIntelCurated": "/Sonoxo/GlassOnion/public-intel-curated",
     "modelPatterns": ["container-backed", "batch", "live-deployment"],
     "geospatial": {
       "crs": "WGS84",
@@ -16,23 +25,63 @@
     }
   },
   "ontology": {
-    "objectTypes": ["Camera", "Detection"],
-    "links": ["CameraDetections"],
-    "reviewActions": ["flagDetectionForReview", "clearDetectionReview"]
+    "objectTypes": [
+      "Camera",
+      "Detection",
+      "Source",
+      "Document",
+      "Observation",
+      "GEOINTEntity",
+      "Place",
+      "Dataset",
+      "AnalyticAssessment",
+      "GEOINTStandard",
+      "ProvenanceRecord",
+      "ConfidenceAssessment"
+    ],
+    "links": [
+      "CameraDetections",
+      "DocumentDerivedFromSource",
+      "ObservationSupportedByDocument",
+      "ObservationMentionsPlace",
+      "AssessmentSupportedByObservation",
+      "DatasetConformsToStandard",
+      "RecordHasProvenance"
+    ],
+    "reviewActions": [
+      "flagDetectionForReview",
+      "clearDetectionReview",
+      "flagIntelligenceRecordForReview",
+      "clearIntelligenceRecordReview"
+    ]
+  },
+  "publicIntelligence": {
+    "sourceRegistry": "intel/sources.json",
+    "recordSchema": "intel/public-intelligence.schema.json",
+    "semanticOntology": "intel/geoint-public.ttl",
+    "foundryMapping": "intel/foundry-ontology-map.json",
+    "invariant": "NO INTELLIGENCE ASSERTION WITHOUT SOURCE + TIME + PROVENANCE + CONFIDENCE"
   },
   "runtime": {
     "command": "/VA3LM",
     "statusRoute": "/api/va3lm/geovision/status",
     "cameraRead": "GEOVISION CAMERAS <ontology>",
-    "detectionRead": "GEOVISION DETECTIONS <ontology>"
+    "detectionRead": "GEOVISION DETECTIONS <ontology>",
+    "publicIntelRead": "PUBLIC INTEL <ontology>"
   },
   "privacyBoundary": {
     "authorizedInputsOnly": true,
+    "publicIntelOnly": true,
+    "allowInferenceFromRedactions": false,
+    "allowOfficialGovernmentAffiliationClaim": false,
     "forbidden": [
       "face recognition",
       "biometric embeddings",
       "named-person lookup",
-      "persistent individual tracking"
+      "persistent individual tracking",
+      "credential bypass",
+      "classified-source inference",
+      "autonomous physical-force workflows"
     ]
   }
 }
