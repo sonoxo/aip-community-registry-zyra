@@ -1,0 +1,30 @@
+name: CIA Reading Room Endpoint Diagnostic
+
+on:
+  push:
+    branches:
+      - feature/gpt-glassonion-public-intel-v03
+    paths:
+      - '.github/workflows/cia-reading-room-endpoint-diagnostic.yml'
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe Reading Room endpoints without following redirects
+        shell: bash
+        run: |
+          set +e
+          urls=(
+            'https://www.cia.gov/readingroom/search/site/?f%5B0%5D=ds_created%3A%5B2026-01-01T00%3A00%3A00Z%20TO%202027-01-01T00%3A00%3A00Z%5D'
+            'https://www.cia.gov/readingroom/search/site?f%5B0%5D=ds_created%3A%5B2026-01-01T00%3A00%3A00Z%20TO%202027-01-01T00%3A00%3A00Z%5D'
+            'https://www.cia.gov/readingroom/search/site/'
+            'https://www.cia.gov/readingroom/'
+            'https://www.cia.gov/readingroom/document/03004640'
+          )
+          for u in "${urls[@]}"; do
+            echo "===== $u"
+            curl -sS -D - -o /dev/null --max-redirs 0 -A 'Mozilla/5.0' "$u" | sed -n '1,30p'
+            echo
+          done
