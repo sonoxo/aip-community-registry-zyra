@@ -2,30 +2,34 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "GPT-GlassOnion Ontology Mapping",
   "type": "object",
-  "required": [
-    "types",
-    "objects",
-    "links"
-  ],
+  "required": ["types", "objects", "links"],
   "properties": {
-    "types": {
-      "type": "array"
-    },
-    "objects": {
-      "type": "array"
-    },
-    "links": {
-      "type": "array"
-    },
+    "types": { "type": "array" },
+    "objects": { "type": "array" },
+    "links": { "type": "array" },
     "geo": {
       "type": "object",
       "properties": {
-        "type": {
-          "const": "FeatureCollection"
+        "type": { "const": "FeatureCollection" },
+        "features": { "type": "array" },
+        "coordinateReferenceSystem": { "type": "string", "default": "WGS84" }
+      }
+    },
+    "intelligence": {
+      "type": "object",
+      "required": ["classification", "source", "retrievedAt", "provenance", "confidence"],
+      "properties": {
+        "classification": {
+          "type": "string",
+          "enum": ["PUBLIC", "PUBLIC/DECLASSIFIED", "PUBLIC/UNCLASSIFIED"]
         },
-        "features": {
-          "type": "array"
-        }
+        "source": {
+          "type": "object",
+          "required": ["publisher", "url"]
+        },
+        "retrievedAt": { "type": "string" },
+        "provenance": { "type": "object" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
       }
     }
   }
