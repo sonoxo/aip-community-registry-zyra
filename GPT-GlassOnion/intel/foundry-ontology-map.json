@@ -1,0 +1,49 @@
+{
+  "version": "0.3.0",
+  "status": "integration-ready-not-tenant-verified",
+  "pipeline": [
+    "PublicSourceRaw",
+    "ProvenanceNormalized",
+    "EntityRelationshipExtracted",
+    "GEOINTCurated",
+    "OntologyMapped"
+  ],
+  "objectTypes": [
+    "Source",
+    "Document",
+    "Observation",
+    "GEOINTEntity",
+    "Place",
+    "Dataset",
+    "AnalyticAssessment",
+    "GEOINTStandard",
+    "ProvenanceRecord",
+    "ConfidenceAssessment"
+  ],
+  "linkTypes": [
+    "DocumentDerivedFromSource",
+    "ObservationSupportedByDocument",
+    "ObservationMentionsPlace",
+    "AssessmentSupportedByObservation",
+    "DatasetConformsToStandard",
+    "RecordHasProvenance"
+  ],
+  "requiredProperties": {
+    "Source": ["publisher", "url", "classificationLabel", "retrievalDate"],
+    "Document": ["recordId", "sourceUrl", "classificationLabel", "confidence"],
+    "ProvenanceRecord": ["sourceType", "transformations"],
+    "Observation": ["recordId", "confidence"]
+  },
+  "runtimeSecrets": [
+    "FOUNDRY_API_URL",
+    "FOUNDRY_ONTOLOGY_RID",
+    "FOUNDRY_CLIENT_ID",
+    "FOUNDRY_CLIENT_SECRET"
+  ],
+  "invariants": [
+    "No intelligence assertion without source, time, provenance, and confidence",
+    "No inference of classified capability from redactions or missing material",
+    "No government affiliation claim",
+    "No secrets or customer data committed to Git"
+  ]
+}
