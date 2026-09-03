@@ -1,0 +1,13 @@
+{
+  "controlPlane": "THE_BLACK_HOUSE_V1",
+  "kernelVersion": "3.0.0",
+  "missionProtocol": "black-house-mission-v1",
+  "component": "AIP_REGISTRY",
+  "acceptedTargets": ["AIP_REGISTRY"],
+  "adapterMode": "contract-adapter",
+  "requiredCapabilities": ["tests", "typecheck", "dependency-audit", "production-build"],
+  "mutationAuthority": false,
+  "evidenceRequired": true,
+  "auditRequired": true,
+  "failClosed": true
+}
