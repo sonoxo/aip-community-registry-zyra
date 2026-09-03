@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0.0",
+  "controlPlane": "THE_BLACK_HOUSE_V1",
+  "canonicalRoot": "sonoxo/gpt-doug-llm/the-black-house",
+  "component": "AIP_REGISTRY",
+  "role": "shared_ci_quality_gate",
+  "requiredContract": ".github/workflows/node-quality-gate.yml",
+  "requiredCapabilities": ["tests","typecheck","dependency-audit","production-build"],
+  "consumer": "sonoxo/zyra",
+  "failureState": "RED",
+  "successState": "GREEN"
+}
