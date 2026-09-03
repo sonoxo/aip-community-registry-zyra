@@ -1,5 +1,6 @@
 {
   "schemaVersion": "1.0.0",
+  "kernelVersion": "3.0.0",
   "controlPlane": "THE_BLACK_HOUSE_V1",
   "canonicalRoot": "sonoxo/gpt-doug-llm/the-black-house",
   "component": "AIP_REGISTRY",
