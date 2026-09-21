@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0.0",
+  "policyId": "NIST_AI_RMF_1_0_XUNIA_PROFILE_V1",
+  "status": "ADOPTED_INTERNAL_PROFILE",
+  "canonicalPolicy": "sonoxo/gpt-doug-llm/the-black-house/governance/nist-ai-rmf.profile.json",
+  "ownerScope": "github.com/sonoxo/*",
+  "component": "AIP_REGISTRY",
+  "functions": [
+    "GOVERN",
+    "MAP",
+    "MEASURE",
+    "MANAGE"
+  ],
+  "enforcement": {
+    "failClosed": true,
+    "humanOwnerRequired": true,
+    "tevvRequiredBeforeGreen": true,
+    "highRiskHumanReviewRequired": true,
+    "criticalRiskDefault": "HOLD",
+    "thirdPartyInventoryRequired": true,
+    "residualRiskRecordRequired": true
+  },
+  "upstreamBoundary": "This Sonoxo fork remains derived from palantir/aip-community-registry. Local governance files do not imply Palantir adoption, endorsement, or authorization.",
+  "disclaimer": "Internal implementation profile based on NIST AI RMF. It does not assert NIST certification, endorsement, or automatic legal compliance."
+}
