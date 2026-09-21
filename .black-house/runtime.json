@@ -6,8 +6,18 @@
   "component": "AIP_REGISTRY",
   "role": "shared_ci_quality_gate",
   "requiredContract": ".github/workflows/node-quality-gate.yml",
-  "requiredCapabilities": ["tests","typecheck","dependency-audit","production-build"],
+  "requiredCapabilities": [
+    "tests",
+    "typecheck",
+    "dependency-audit",
+    "production-build"
+  ],
   "consumer": "sonoxo/zyra",
   "failureState": "RED",
-  "successState": "GREEN"
+  "successState": "GREEN",
+  "governance": {
+    "profile": "NIST_AI_RMF_1_0_XUNIA_PROFILE_V1",
+    "contract": ".black-house/nist-ai-rmf.json",
+    "failClosed": true
+  }
 }
